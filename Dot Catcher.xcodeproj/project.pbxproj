@@ -15,6 +15,7 @@
 		117E253B24733FA700173651 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 117E253924733FA700173651 /* Main.storyboard */; };
 		117E253D24733FA700173651 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 117E253C24733FA700173651 /* Assets.xcassets */; };
 		117E254024733FA700173651 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 117E253E24733FA700173651 /* LaunchScreen.storyboard */; };
+		117E254C247345D300173651 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117E254B247345D300173651 /* Settings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		117E253C24733FA700173651 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		117E253F24733FA700173651 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		117E254124733FA700173651 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		117E254B247345D300173651 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,17 +62,50 @@
 		117E252E24733FA700173651 /* Dot Catcher */ = {
 			isa = PBXGroup;
 			children = (
+				117E254124733FA700173651 /* Info.plist */,
+				117E254A2473458800173651 /* Assets */,
+				117E25492473456A00173651 /* Template */,
+				117E25482473454000173651 /* ViewController */,
+				117E25472473452900173651 /* Scenes */,
+			);
+			path = "Dot Catcher";
+			sourceTree = "<group>";
+		};
+		117E25472473452900173651 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				117E253524733FA700173651 /* GameScene.swift */,
+			);
+			path = Scenes;
+			sourceTree = "<group>";
+		};
+		117E25482473454000173651 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				117E253724733FA700173651 /* GameViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		117E25492473456A00173651 /* Template */ = {
+			isa = PBXGroup;
+			children = (
 				117E252F24733FA700173651 /* AppDelegate.swift */,
 				117E253124733FA700173651 /* GameScene.sks */,
 				117E253324733FA700173651 /* Actions.sks */,
-				117E253524733FA700173651 /* GameScene.swift */,
-				117E253724733FA700173651 /* GameViewController.swift */,
+				117E254B247345D300173651 /* Settings.swift */,
+			);
+			path = Template;
+			sourceTree = "<group>";
+		};
+		117E254A2473458800173651 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
 				117E253924733FA700173651 /* Main.storyboard */,
 				117E253C24733FA700173651 /* Assets.xcassets */,
 				117E253E24733FA700173651 /* LaunchScreen.storyboard */,
-				117E254124733FA700173651 /* Info.plist */,
 			);
-			path = "Dot Catcher";
+			path = Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -148,6 +183,7 @@
 			files = (
 				117E253624733FA700173651 /* GameScene.swift in Sources */,
 				117E253824733FA700173651 /* GameViewController.swift in Sources */,
+				117E254C247345D300173651 /* Settings.swift in Sources */,
 				117E253024733FA700173651 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
