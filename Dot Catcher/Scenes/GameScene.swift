@@ -21,6 +21,11 @@ class GameScene: SKScene {
     
     
     func touchDown(atPoint pos : CGPoint) {
+        for boundary in Circles {
+            if !(boundary.path?.contains(pos) ?? false) {
+               print("bad")
+            }
+        }
         let Circle = SKShapeNode(circleOfRadius: 1500)
         Circle.xScale = 0.001
         Circle.yScale = 0.001
@@ -32,7 +37,7 @@ class GameScene: SKScene {
         
         self.addChild(Circle)
         self.Circles.append(Circle)
-        print(self.Circles.count)
+        //print(self.Circles.count - 1)
         let scale = SKAction.scale(to: 1, duration: self.SCALESPEED)
         Circle.run(scale) {
             Circle.removeFromParent()
@@ -43,9 +48,28 @@ class GameScene: SKScene {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let touch:UITouch = touches.first! as UITouch
+        let positionInScene = touch.location(in: self)
+        let touchedNodes = self.nodes(at: positionInScene)
         
+        var isInsideOfCircles: Int = 0
+        
+        for node in touchedNodes {
+            if let name = node.name {
+                if name == "circleSpread" {
+                    isInsideOfCircles += 1
+                }
+            }
+        }
+        
+        if isInsideOfCircles < Circles.count {
+            print("Game Over!")
+        }
+        
+
         for t in touches { self.touchDown(atPoint: t.location(in: self)) }
     }
+    
     
     
     override func update(_ currentTime: TimeInterval) {
