@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1162A48F247716DD001A5B7A /* Game_Background_Music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1162A48E247716DD001A5B7A /* Game_Background_Music.mp3 */; };
 		117E253024733FA700173651 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117E252F24733FA700173651 /* AppDelegate.swift */; };
 		117E253224733FA700173651 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 117E253124733FA700173651 /* GameScene.sks */; };
 		117E253424733FA700173651 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 117E253324733FA700173651 /* Actions.sks */; };
@@ -19,6 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1162A48E247716DD001A5B7A /* Game_Background_Music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Game_Background_Music.mp3; sourceTree = "<group>"; };
 		117E252C24733FA700173651 /* Dot Catcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Dot Catcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		117E252F24733FA700173651 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		117E253124733FA700173651 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -62,6 +64,7 @@
 		117E252E24733FA700173651 /* Dot Catcher */ = {
 			isa = PBXGroup;
 			children = (
+				1162A48E247716DD001A5B7A /* Game_Background_Music.mp3 */,
 				117E254124733FA700173651 /* Info.plist */,
 				117E254A2473458800173651 /* Assets */,
 				117E25492473456A00173651 /* Template */,
@@ -166,6 +169,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1162A48F247716DD001A5B7A /* Game_Background_Music.mp3 in Resources */,
 				117E253B24733FA700173651 /* Main.storyboard in Resources */,
 				117E253224733FA700173651 /* GameScene.sks in Resources */,
 				117E253D24733FA700173651 /* Assets.xcassets in Resources */,

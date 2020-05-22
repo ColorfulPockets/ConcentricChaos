@@ -48,9 +48,16 @@ class GameScene: SKScene {
     
     var timer = Timer()
     
+    var backgroundMusic: SKAudioNode!
+    
     override func didMove(to view: SKView) {
         
         self.backgroundColor = UIColor.black
+        
+        let backgroundMusic = SKAudioNode(fileNamed: "Game_Background_Music.mp3")
+        
+        addChild(backgroundMusic)
+        
         
         mainMenu()
         
