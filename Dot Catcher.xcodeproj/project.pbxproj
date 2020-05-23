@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1162A48F247716DD001A5B7A /* Game_Background_Music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1162A48E247716DD001A5B7A /* Game_Background_Music.mp3 */; };
+		1162A48F247716DD001A5B7A /* music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1162A48E247716DD001A5B7A /* music.mp3 */; };
 		117E253024733FA700173651 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117E252F24733FA700173651 /* AppDelegate.swift */; };
 		117E253224733FA700173651 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 117E253124733FA700173651 /* GameScene.sks */; };
 		117E253424733FA700173651 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 117E253324733FA700173651 /* Actions.sks */; };
@@ -20,7 +20,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1162A48E247716DD001A5B7A /* Game_Background_Music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Game_Background_Music.mp3; sourceTree = "<group>"; };
+		1162A48E247716DD001A5B7A /* music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = music.mp3; path = "Dot Catcher/music.mp3"; sourceTree = SOURCE_ROOT; };
 		117E252C24733FA700173651 /* Dot Catcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Dot Catcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		117E252F24733FA700173651 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		117E253124733FA700173651 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -32,6 +32,11 @@
 		117E253F24733FA700173651 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		117E254124733FA700173651 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		117E254B247345D300173651 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		11E0F4672478EA5300D4B690 /* triangle.aif */ = {isa = PBXFileReference; lastKnownFileType = file; name = triangle.aif; path = ../../../Downloads/triangle.aif; sourceTree = "<group>"; };
+		11E0F4682478EA5A00D4B690 /* square.aif */ = {isa = PBXFileReference; lastKnownFileType = file; name = square.aif; path = ../../../Downloads/square.aif; sourceTree = "<group>"; };
+		11E0F4692478EA6000D4B690 /* circle.aif */ = {isa = PBXFileReference; lastKnownFileType = file; name = circle.aif; path = ../../../Downloads/circle.aif; sourceTree = "<group>"; };
+		11E0F46A2478EA6700D4B690 /* buffer.aif */ = {isa = PBXFileReference; lastKnownFileType = file; name = buffer.aif; path = ../../../Downloads/buffer.aif; sourceTree = "<group>"; };
+		11E0F46B2478EA6D00D4B690 /* bad.aif */ = {isa = PBXFileReference; lastKnownFileType = file; name = bad.aif; path = ../../../Downloads/bad.aif; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,8 +69,13 @@
 		117E252E24733FA700173651 /* Dot Catcher */ = {
 			isa = PBXGroup;
 			children = (
-				1162A48E247716DD001A5B7A /* Game_Background_Music.mp3 */,
 				117E254124733FA700173651 /* Info.plist */,
+				1162A48E247716DD001A5B7A /* music.mp3 */,
+				11E0F4672478EA5300D4B690 /* triangle.aif */,
+				11E0F4682478EA5A00D4B690 /* square.aif */,
+				11E0F4692478EA6000D4B690 /* circle.aif */,
+				11E0F46A2478EA6700D4B690 /* buffer.aif */,
+				11E0F46B2478EA6D00D4B690 /* bad.aif */,
 				117E254A2473458800173651 /* Assets */,
 				117E25492473456A00173651 /* Template */,
 				117E25482473454000173651 /* ViewController */,
@@ -169,7 +179,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1162A48F247716DD001A5B7A /* Game_Background_Music.mp3 in Resources */,
+				1162A48F247716DD001A5B7A /* music.mp3 in Resources */,
 				117E253B24733FA700173651 /* Main.storyboard in Resources */,
 				117E253224733FA700173651 /* GameScene.sks in Resources */,
 				117E253D24733FA700173651 /* Assets.xcassets in Resources */,

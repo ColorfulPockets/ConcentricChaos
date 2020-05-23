@@ -9,6 +9,8 @@
 import SpriteKit
 import GameplayKit
 import UIKit
+import Foundation
+import AVFoundation
 
 class GameScene: SKScene {
     
@@ -48,19 +50,72 @@ class GameScene: SKScene {
     
     var timer = Timer()
     
-    var backgroundMusic: SKAudioNode!
+    var backgroundMusic: AVAudioPlayer?
+    var circleNoise: AVAudioPlayer?
+    var triangleNoise: AVAudioPlayer?
+    var squareNoise: AVAudioPlayer?
+    var badNoise: AVAudioPlayer?
+    var bufferNoise: AVAudioPlayer?
+    
+    var soundsOn = true
+    
+    var rightSide: CGFloat?
+    var topSide: CGFloat?
+    
+    var topConstant = 0
+    var sideConstant = 0
     
     override func didMove(to view: SKView) {
         
+        iPhoneScreenSizes()
+        
+        topSide = UIScreen.main.bounds.height - CGFloat(topConstant)
+        rightSide = UIScreen.main.bounds.width - CGFloat(sideConstant)
+        
         self.backgroundColor = UIColor.black
         
-        let backgroundMusic = SKAudioNode(fileNamed: "Game_Background_Music.mp3")
+        let path = Bundle.main.path(forResource: "music.mp3", ofType: nil)!
+        let url = URL(fileURLWithPath: path)
         
-        addChild(backgroundMusic)
+        print(path)
         
+        do {
+            backgroundMusic = try AVAudioPlayer(contentsOf: url)
+            backgroundMusic?.numberOfLoops = -1
+            backgroundMusic?.volume = 0.5
+            backgroundMusic?.play()
+        } catch {
+            print("AAAAA")
+        }
         
         mainMenu()
         
+    }
+    
+    func iPhoneScreenSizes() {
+        let bounds = UIScreen.main.bounds
+        let height = bounds.size.height
+
+        switch height {
+        case 480.0:
+            fallthrough
+        case 568.0:
+            fallthrough
+        case 667.0:
+            fallthrough
+        case 736.0:
+            topConstant = 50
+            sideConstant = 0
+        case 812.0:
+            topConstant = 220
+            sideConstant = 50
+        case 896.0:
+            topConstant = 300
+            sideConstant = 90
+        default:
+            topConstant = 0
+
+        }
     }
     
     func scheduledTimerWithTimeInterval(){
@@ -139,84 +194,7 @@ class GameScene: SKScene {
         
         self.removeAllChildren()
         
-        let easyLabel = SKLabelNode(text: "Easy")
-        easyLabel.position = CGPoint(x: -280, y: DIFFICULTYBOXHEIGHT - 5)
-        easyLabel.fontColor = (difficulty == 0 ? UIColor.green : UIColor.white)
-        easyLabel.fontSize = 40
-        easyLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        self.addChild(easyLabel)
-        
-        let easyBox = SKShapeNode(rectOf: CGSize(width: 140, height: 100))
-        easyBox.position = CGPoint(x: -280, y: DIFFICULTYBOXHEIGHT)
-        easyBox.strokeColor = (difficulty == 0 ? UIColor.green : UIColor.white)
-        easyBox.zPosition = (difficulty == 0 ? 1 : 0)
-        easyBox.name = "easyBox"
-        self.addChild(easyBox)
-        
-        let normalLabel = SKLabelNode(text: "Normal")
-        normalLabel.position = CGPoint(x: -140, y: DIFFICULTYBOXHEIGHT)
-        normalLabel.fontColor = (difficulty == 1 ? UIColor.green : UIColor.white)
-        normalLabel.fontSize = 40
-        normalLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        self.addChild(normalLabel)
-        
-        let normalBox = SKShapeNode(rectOf: CGSize(width: 140, height: 100))
-        normalBox.position = CGPoint(x: -140, y: DIFFICULTYBOXHEIGHT)
-        normalBox.strokeColor = (difficulty == 1 ? UIColor.green : UIColor.white)
-        normalBox.zPosition = (difficulty == 1 ? 1 : 0)
-        normalBox.name = "normalBox"
-        self.addChild(normalBox)
-        
-        let hardLabel = SKLabelNode(text: "Hard")
-        hardLabel.position = CGPoint(x: 0, y: DIFFICULTYBOXHEIGHT)
-        hardLabel.fontColor = (difficulty == 2 ? UIColor.green : UIColor.white)
-        hardLabel.fontSize = 40
-        hardLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        self.addChild(hardLabel)
-        
-        let hardBox = SKShapeNode(rectOf: CGSize(width: 140, height: 100))
-        hardBox.position = CGPoint(x: 0, y: DIFFICULTYBOXHEIGHT)
-        hardBox.strokeColor = (difficulty == 2 ? UIColor.green : UIColor.white)
-        hardBox.zPosition = (difficulty == 2 ? 1 : 0)
-        hardBox.name = "hardBox"
-        self.addChild(hardBox)
-        
-        let expertLabel = SKLabelNode(text: "Expert")
-        expertLabel.position = CGPoint(x: 140, y: DIFFICULTYBOXHEIGHT - 5)
-        expertLabel.fontColor = (difficulty == 3 ? UIColor.green : UIColor.white)
-        expertLabel.fontSize = 40
-        expertLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        self.addChild(expertLabel)
-        
-        let expertBox = SKShapeNode(rectOf: CGSize(width: 140, height: 100))
-        expertBox.position = CGPoint(x: 140, y: DIFFICULTYBOXHEIGHT)
-        expertBox.strokeColor = (difficulty == 3 ? UIColor.green : UIColor.white)
-        expertBox.zPosition = (difficulty == 3 ? 1 : 0)
-        expertBox.name = "expertBox"
-        self.addChild(expertBox)
-        
-        let absurdLabel = SKLabelNode(text: "Absurd")
-        absurdLabel.position = CGPoint(x: 280, y: DIFFICULTYBOXHEIGHT)
-        absurdLabel.fontColor = (difficulty == 4 ? UIColor.green : UIColor.white)
-        absurdLabel.fontSize = 40
-        absurdLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        self.addChild(absurdLabel)
-        
-        let absurdBox = SKShapeNode(rectOf: CGSize(width: 140, height: 100))
-        absurdBox.position = CGPoint(x: 280, y: DIFFICULTYBOXHEIGHT)
-        absurdBox.strokeColor = (difficulty == 4 ? UIColor.green : UIColor.white)
-        absurdBox.zPosition = (difficulty == 4 ? 1 : 0)
-        absurdBox.name = "absurdBox"
-        self.addChild(absurdBox)
-        
-        let startButton = SKShapeNode(rectOf: CGSize(width: 500, height: 200))
-        startButton.name = "startButton"
-        self.addChild(startButton)
-        
-        let startButtonLabel = SKLabelNode(text: "Start!")
-        startButtonLabel.fontSize = 100
-        startButtonLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
-        self.addChild(startButtonLabel)
+        createDifficultyNodes()
         
         /* THIS SECTION IS FOR MAKING ADJUSTMENTS TO SPEEDS AND TIMING
         
@@ -297,6 +275,8 @@ class GameScene: SKScene {
  
  */
         
+        createMusicOptions()
+        
         let lastScoreLabel = SKLabelNode(text: "Last Score: " + String(lastScore))
         lastScoreLabel.fontSize = 80
         lastScoreLabel.position = CGPoint(x: 0, y: -250)
@@ -326,9 +306,120 @@ class GameScene: SKScene {
         default:
             print("Error: difficulty out of range.")
         }
+        
+        dotsToBuffer = 25
+        dotsSinceBuffer = 0
+    }
+    
+    func createDifficultyNodes() {
+        let easyLabel = SKLabelNode(text: "Easy")
+        easyLabel.position = CGPoint(x: -70, y: DIFFICULTYBOXHEIGHT + 95)
+        easyLabel.fontColor = (difficulty == 0 ? UIColor.green : UIColor.white)
+        easyLabel.fontSize = 40
+        easyLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        self.addChild(easyLabel)
+        
+        let easyBox = SKShapeNode(rectOf: CGSize(width: 140, height: 100))
+        easyBox.position = CGPoint(x: -70, y: DIFFICULTYBOXHEIGHT + 100)
+        easyBox.strokeColor = (difficulty == 0 ? UIColor.green : UIColor.white)
+        easyBox.zPosition = (difficulty == 0 ? 1 : 0)
+        easyBox.name = "easyBox"
+        self.addChild(easyBox)
+        
+        let normalLabel = SKLabelNode(text: "Normal")
+        normalLabel.position = CGPoint(x: 70, y: DIFFICULTYBOXHEIGHT + 100)
+        normalLabel.fontColor = (difficulty == 1 ? UIColor.green : UIColor.white)
+        normalLabel.fontSize = 40
+        normalLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        self.addChild(normalLabel)
+        
+        let normalBox = SKShapeNode(rectOf: CGSize(width: 140, height: 100))
+        normalBox.position = CGPoint(x: 70, y: DIFFICULTYBOXHEIGHT + 100)
+        normalBox.strokeColor = (difficulty == 1 ? UIColor.green : UIColor.white)
+        normalBox.zPosition = (difficulty == 1 ? 1 : 0)
+        normalBox.name = "normalBox"
+        self.addChild(normalBox)
+        
+        let hardLabel = SKLabelNode(text: "Hard")
+        hardLabel.position = CGPoint(x: -140, y: DIFFICULTYBOXHEIGHT)
+        hardLabel.fontColor = (difficulty == 2 ? UIColor.green : UIColor.white)
+        hardLabel.fontSize = 40
+        hardLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        self.addChild(hardLabel)
+        
+        let hardBox = SKShapeNode(rectOf: CGSize(width: 140, height: 100))
+        hardBox.position = CGPoint(x: -140, y: DIFFICULTYBOXHEIGHT)
+        hardBox.strokeColor = (difficulty == 2 ? UIColor.green : UIColor.white)
+        hardBox.zPosition = (difficulty == 2 ? 1 : 0)
+        hardBox.name = "hardBox"
+        self.addChild(hardBox)
+        
+        let expertLabel = SKLabelNode(text: "Expert")
+        expertLabel.position = CGPoint(x: 0, y: DIFFICULTYBOXHEIGHT - 5)
+        expertLabel.fontColor = (difficulty == 3 ? UIColor.green : UIColor.white)
+        expertLabel.fontSize = 40
+        expertLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        self.addChild(expertLabel)
+        
+        let expertBox = SKShapeNode(rectOf: CGSize(width: 140, height: 100))
+        expertBox.position = CGPoint(x: 0, y: DIFFICULTYBOXHEIGHT)
+        expertBox.strokeColor = (difficulty == 3 ? UIColor.green : UIColor.white)
+        expertBox.zPosition = (difficulty == 3 ? 1 : 0)
+        expertBox.name = "expertBox"
+        self.addChild(expertBox)
+        
+        let absurdLabel = SKLabelNode(text: "Absurd")
+        absurdLabel.position = CGPoint(x: 140, y: DIFFICULTYBOXHEIGHT)
+        absurdLabel.fontColor = (difficulty == 4 ? UIColor.green : UIColor.white)
+        absurdLabel.fontSize = 40
+        absurdLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        self.addChild(absurdLabel)
+        
+        let absurdBox = SKShapeNode(rectOf: CGSize(width: 140, height: 100))
+        absurdBox.position = CGPoint(x: 140, y: DIFFICULTYBOXHEIGHT)
+        absurdBox.strokeColor = (difficulty == 4 ? UIColor.green : UIColor.white)
+        absurdBox.zPosition = (difficulty == 4 ? 1 : 0)
+        absurdBox.name = "absurdBox"
+        self.addChild(absurdBox)
+        
+        let startButton = SKShapeNode(rectOf: CGSize(width: 500, height: 200))
+        startButton.name = "startButton"
+        self.addChild(startButton)
+        
+        let startButtonLabel = SKLabelNode(text: "Start!")
+        startButtonLabel.fontSize = 100
+        startButtonLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        self.addChild(startButtonLabel)
+    }
+    
+    func createMusicOptions() {
+        let musicNode = SKLabelNode(text: "Music: " + (backgroundMusic!.isPlaying ? "On" : "Off"))
+        musicNode.position = CGPoint(x: -1 * rightSide! + 50, y: topSide! - 50)
+        musicNode.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+        musicNode.fontSize = 40
+        addChild(musicNode)
+        
+        let musicNodeBox = SKShapeNode(rectOf: CGSize(width: 200, height: 100))
+        musicNodeBox.position = CGPoint(x: -1 * rightSide! + 140, y: topSide! - 50)
+        musicNodeBox.name = "musicBox"
+        musicNodeBox.strokeColor = UIColor.clear
+        addChild(musicNodeBox)
+        
+        let soundsNode = SKLabelNode(text: "Sounds: " + (soundsOn ? "On" : "Off" ))
+        soundsNode.position = CGPoint(x: rightSide! - 50, y: topSide! - 50)
+        soundsNode.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
+        soundsNode.fontSize = 40
+        addChild(soundsNode)
+        
+        let soundsNodeBox = SKShapeNode(rectOf: CGSize(width: 240, height: 100))
+        soundsNodeBox.position = CGPoint(x: rightSide! - 140, y: topSide! - 50)
+        soundsNodeBox.name = "soundsBox"
+        soundsNodeBox.strokeColor = UIColor.clear
+        addChild(soundsNodeBox)
     }
     
     @objc func spawnDots() {
+        
         if startPressed {
             let skip = false
             let dotType = Int.random(in: 0...2)
@@ -621,6 +712,20 @@ class GameScene: SKScene {
                 } else if name == "absurdBox" {
                     difficulty = 4
                     mainMenu()
+                } else if name == "musicBox" {
+                    if backgroundMusic!.isPlaying {
+                        backgroundMusic?.pause()
+                    } else {
+                        backgroundMusic?.play()
+                    }
+                    mainMenu()
+                } else if name == "soundsBox" {
+                    if soundsOn {
+                        soundsOn = false
+                    } else {
+                        soundsOn = true
+                    }
+                    mainMenu()
                 }
             }
         }
@@ -630,6 +735,18 @@ class GameScene: SKScene {
             circle.removeFromParent()
             
             plusScore()
+            
+            let path = Bundle.main.path(forResource: "circle.aif", ofType: nil)!
+            let url = URL(fileURLWithPath: path)
+            if soundsOn {
+                do {
+                    circleNoise = try AVAudioPlayer(contentsOf: url)
+                    circleNoise?.volume = 0.6
+                    circleNoise?.play()
+                } catch {
+                    print("AAAAA")
+                }
+            }
             
             for node in self.children {
                 if let name = node.name {
@@ -651,6 +768,18 @@ class GameScene: SKScene {
             
             plusScore()
             
+            let path = Bundle.main.path(forResource: "square.aif", ofType: nil)!
+            let url = URL(fileURLWithPath: path)
+           
+            if soundsOn {
+                do {
+                    squareNoise = try AVAudioPlayer(contentsOf: url)
+                    squareNoise?.play()
+                } catch {
+                    print("AAAAA")
+                }
+            }
+            
             for node in self.children {
                 if let name = node.name {
                     if name == "squareSpread" {
@@ -671,6 +800,18 @@ class GameScene: SKScene {
             
             plusScore()
             
+            if soundsOn {
+                let path = Bundle.main.path(forResource: "triangle.aif", ofType: nil)!
+                let url = URL(fileURLWithPath: path)
+                
+                do {
+                    triangleNoise = try AVAudioPlayer(contentsOf: url)
+                    triangleNoise?.volume = 1.5
+                    triangleNoise?.play()
+                } catch {
+                    print("AAAAA")
+                }
+            }
             for node in self.children {
                 if let name = node.name {
                     if name == "triangleSpread" {
@@ -711,6 +852,18 @@ class GameScene: SKScene {
     }
     
     func checkLoss() {
+        if soundsOn {
+            let path = Bundle.main.path(forResource: "bad.aif", ofType: nil)!
+            let url = URL(fileURLWithPath: path)
+            
+            do {
+                badNoise = try AVAudioPlayer(contentsOf: url)
+                badNoise?.volume = 0.7
+                badNoise?.play()
+            } catch {
+                print("AAAAA")
+            }
+        }
         if buffer {
             buffer = false
             dotsSinceBuffer = 0
@@ -725,6 +878,17 @@ class GameScene: SKScene {
     
     func bufferActive() {
         buffer = true
+        
+        let path = Bundle.main.path(forResource: "buffer.aif", ofType: nil)!
+        let url = URL(fileURLWithPath: path)
+        
+        do {
+            bufferNoise = try AVAudioPlayer(contentsOf: url)
+            bufferNoise?.volume = 0.7
+            bufferNoise?.play()
+        } catch {
+            print("AAAAA")
+        }
         
         let flash = SKAction.colorize(with: UIColor.blue, colorBlendFactor: 1, duration: 0.05)
         let unflash = SKAction.colorize(with: UIColor.black, colorBlendFactor: 1, duration: 0.4)
@@ -746,7 +910,8 @@ class GameScene: SKScene {
         
         if buffer {
             let bufferLabel = SKLabelNode(text: "Buffer Active")
-            bufferLabel.position = CGPoint(x: -250, y: 550)
+            bufferLabel.position = CGPoint(x: -1 * rightSide! + 50, y: topSide! - 50)
+            bufferLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
             bufferLabel.fontSize = 50
             bufferLabel.name = "bufferNode"
             self.addChild(bufferLabel)
@@ -772,7 +937,9 @@ class GameScene: SKScene {
             currentScore.removeFromParent()
         }
         let scoreLabel = SKLabelNode(text: String(score))
-        scoreLabel.position = CGPoint(x: 300, y: 550)
+        scoreLabel.position = CGPoint(x: rightSide! - 50, y: topSide! - 50)
+        print(scoreLabel.position)
+        scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
         scoreLabel.fontSize = 50
         scoreLabel.name = "scoreNode"
         self.addChild(scoreLabel)
