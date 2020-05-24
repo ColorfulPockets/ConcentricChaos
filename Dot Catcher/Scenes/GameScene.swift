@@ -49,6 +49,7 @@ class GameScene: SKScene {
     var gameLost = false
     
     var timer = Timer()
+    var videoTimer = Timer()
     
     var backgroundMusic: AVAudioPlayer?
     var circleNoise: AVAudioPlayer?
@@ -64,6 +65,12 @@ class GameScene: SKScene {
     
     var topConstant = 0
     var sideConstant = 0
+    var tutorialFontSize = CGFloat(0)
+    
+    var gamePaused = false
+    var tutorialCount = 0
+    
+    var video = ""
     
     override func didMove(to view: SKView) {
         
@@ -74,16 +81,64 @@ class GameScene: SKScene {
         
         self.backgroundColor = UIColor.black
         
+        do {
+            let badPath = Bundle.main.path(forResource: "bad.aif", ofType: nil)!
+            let badUrl = URL(fileURLWithPath: badPath)
+            badNoise = try AVAudioPlayer(contentsOf: badUrl)
+            badNoise?.volume = 0.7
+        } catch {
+            print("AAAA")
+        }
+        
+        let trianglePath = Bundle.main.path(forResource: "triangle.aif", ofType: nil)!
+        let triangleUrl = URL(fileURLWithPath: trianglePath)
+        do {
+            triangleNoise = try AVAudioPlayer(contentsOf: triangleUrl)
+            triangleNoise?.volume = 1.5
+            
+        } catch {
+            print("AAAAA")
+        }
+        
+        let circlePath = Bundle.main.path(forResource: "circle.aif", ofType: nil)!
+        let circleUrl = URL(fileURLWithPath: circlePath)
+        
+        do {
+            circleNoise = try AVAudioPlayer(contentsOf: circleUrl)
+            circleNoise?.volume = 0.6
+        } catch {
+            print("AAAAA")
+        }
+        
+        let squarePath = Bundle.main.path(forResource: "square.aif", ofType: nil)!
+        let squareUrl = URL(fileURLWithPath: squarePath)
+        
+        do {
+            squareNoise = try AVAudioPlayer(contentsOf: squareUrl)
+            
+        } catch {
+            print("AAAAA")
+        }
+        
+        let bufferPath = Bundle.main.path(forResource: "buffer.aif", ofType: nil)!
+        let bufferUrl = URL(fileURLWithPath: bufferPath)
+        
+        do {
+            bufferNoise = try AVAudioPlayer(contentsOf: bufferUrl)
+            bufferNoise?.volume = 0.7
+        } catch {
+            print("AAAAA")
+        }
+        
         let path = Bundle.main.path(forResource: "music.mp3", ofType: nil)!
         let url = URL(fileURLWithPath: path)
-        
-        print(path)
         
         do {
             backgroundMusic = try AVAudioPlayer(contentsOf: url)
             backgroundMusic?.numberOfLoops = -1
             backgroundMusic?.volume = 0.5
-            backgroundMusic?.play()
+            self.backgroundMusic?.play()
+            
         } catch {
             print("AAAAA")
         }
@@ -106,12 +161,15 @@ class GameScene: SKScene {
         case 736.0:
             topConstant = 50
             sideConstant = 0
+            tutorialFontSize = 40
         case 812.0:
             topConstant = 220
             sideConstant = 50
+            tutorialFontSize = 35
         case 896.0:
             topConstant = 300
             sideConstant = 90
+            tutorialFontSize = 35
         default:
             topConstant = 0
 
@@ -309,6 +367,17 @@ class GameScene: SKScene {
         
         dotsToBuffer = 25
         dotsSinceBuffer = 0
+        
+        let tutorialButton = SKShapeNode(rectOf: CGSize(width: 200, height: 100))
+        tutorialButton.position = CGPoint(x: 0, y: -525)
+        tutorialButton.name = "tutorialButton"
+        addChild(tutorialButton)
+        
+        let tutorialLabel = SKLabelNode(text: "Tutorial")
+        tutorialLabel.position = tutorialButton.position
+        tutorialLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        tutorialLabel.fontSize = 50
+        addChild(tutorialLabel)
     }
     
     func createDifficultyNodes() {
@@ -471,15 +540,15 @@ class GameScene: SKScene {
                 var move = SKAction()
                 let coinFlip = Int.random(in: 0...1)
                 if coinFlip == 0 {
-                    let startX = UIScreen.main.bounds.width + 50
-                    let startY = Int.random(in: -Int(UIScreen.main.bounds.height)...Int(UIScreen.main.bounds.height))
+                    let startX = rightSide! + 50
+                    let startY = Int.random(in: -Int(topSide!)...Int(topSide!))
                     dot.position = CGPoint(x: startX, y: CGFloat(startY))
-                    move = SKAction.move(to: CGPoint(x: -1 * UIScreen.main.bounds.width - 50, y: CGFloat(Int.random(in: startY * -1 - VARIANCE...startY * -1 + VARIANCE))), duration: dotTime)
+                    move = SKAction.move(to: CGPoint(x: -1 * rightSide! - 50, y: CGFloat(Int.random(in: startY * -1 - VARIANCE...startY * -1 + VARIANCE))), duration: dotTime)
                 } else {
-                    let startX = -1 * UIScreen.main.bounds.width - 50
-                    let startY = Int.random(in: -Int(UIScreen.main.bounds.height)...Int(UIScreen.main.bounds.height))
+                    let startX = -1 * rightSide! - 50
+                    let startY = Int.random(in: -Int(topSide!)...Int(topSide!))
                     dot.position = CGPoint(x: startX, y: CGFloat(startY))
-                    move = SKAction.move(to: CGPoint(x: UIScreen.main.bounds.width + 50, y: CGFloat(Int.random(in: startY * -1 - VARIANCE...startY * -1 + VARIANCE))), duration: dotTime)
+                    move = SKAction.move(to: CGPoint(x: rightSide! + 50, y: CGFloat(Int.random(in: startY * -1 - VARIANCE...startY * -1 + VARIANCE))), duration: dotTime)
                 }
                 
                 
@@ -504,7 +573,7 @@ class GameScene: SKScene {
         
         self.addChild(Circle)
         self.Circles.append(Circle)
-        //print(self.Circles.count - 1)
+
         let scale = SKAction.scale(to: 1, duration: self.CIRCLESPEED)
         Circle.run(scale) {
             Circle.removeFromParent()
@@ -679,6 +748,7 @@ class GameScene: SKScene {
                     gameLost = false
                     buffer = true
                     updateBuffer()
+                    addPauseButton()
                 } else if name == "growTimePlus" {
                     growTime += 0.25
                     mainMenu()
@@ -726,142 +796,265 @@ class GameScene: SKScene {
                         soundsOn = true
                     }
                     mainMenu()
+                } else if name == "dismissHomeBox" {
+                    buffer = false
+                    gamePaused = false
+                    checkLoss()
+                } else if name == "dismissBox" {
+                    for thing in children {
+                        if thing.name?.contains("info") ?? false || thing.name?.contains("dismiss") ?? false {
+                            thing.removeFromParent()
+                        }
+                    }
+                    unpauseGame()
+                } else if name == "pauseButton" {
+                    pauseGame()
+                } else if name == "tutorialButton" {
+                    tutorial()
+                } else if name == "tutorialNext" {
+                    self.removeAllChildren()
+                    videoTimer.invalidate()
+                    switch tutorialCount {
+                    case 0: tutorial2()
+                    case 1: tutorial3()
+                    default:
+                        tutorialCount = -1
+                        mainMenu()
+                    }
+                    tutorialCount += 1
                 }
             }
         }
         
-        if touchedCircle {
-            
-            circle.removeFromParent()
-            
-            plusScore()
-            
-            let path = Bundle.main.path(forResource: "circle.aif", ofType: nil)!
-            let url = URL(fileURLWithPath: path)
-            if soundsOn {
-                do {
-                    circleNoise = try AVAudioPlayer(contentsOf: url)
-                    circleNoise?.volume = 0.6
-                    circleNoise?.play()
-                } catch {
-                    print("AAAAA")
-                }
-            }
-            
-            for node in self.children {
-                if let name = node.name {
-                    if name == "circleSpread" {
-                        if !circle.intersects(node) {
-                            checkLoss()
-                        }
-                    }
-                }
-            }
-            
-            updateBuffer()
-            
-            for t in touches { self.touchCircle(atPoint: t.location(in: self)) }
-        }
-        if touchedSquare {
-            
-            square.removeFromParent()
-            
-            plusScore()
-            
-            let path = Bundle.main.path(forResource: "square.aif", ofType: nil)!
-            let url = URL(fileURLWithPath: path)
-           
-            if soundsOn {
-                do {
-                    squareNoise = try AVAudioPlayer(contentsOf: url)
-                    squareNoise?.play()
-                } catch {
-                    print("AAAAA")
-                }
-            }
-            
-            for node in self.children {
-                if let name = node.name {
-                    if name == "squareSpread" {
-                        if !square.intersects(node) {
-                            checkLoss()
-                        }
-                    }
-                }
-            }
-            
-            updateBuffer()
-            
-            for t in touches { self.touchSquare(atPoint: t.location(in: self)) }
-        }
-        if touchedTriangle {
-            
-            triangle.removeFromParent()
-            
-            plusScore()
-            
-            if soundsOn {
-                let path = Bundle.main.path(forResource: "triangle.aif", ofType: nil)!
-                let url = URL(fileURLWithPath: path)
+        if !gamePaused {
+        
+            if touchedCircle {
                 
-                do {
-                    triangleNoise = try AVAudioPlayer(contentsOf: url)
-                    triangleNoise?.volume = 1.5
-                    triangleNoise?.play()
-                } catch {
-                    print("AAAAA")
+                circle.removeFromParent()
+                
+                plusScore()
+                
+                if soundsOn {
+                    DispatchQueue.global().async {
+                        self.circleNoise?.currentTime = 0;
+                        self.circleNoise?.play()
+                   }
                 }
-            }
-            for node in self.children {
-                if let name = node.name {
-                    if name == "triangleSpread" {
-                        if !triangle.intersects(node) {
-                            checkLoss()
+                
+                for node in self.children {
+                    if let name = node.name {
+                        if name == "circleSpread" {
+                            if !circle.intersects(node) {
+                                checkLoss()
+                            }
                         }
                     }
                 }
+                
+                updateBuffer()
+                
+                for t in touches { self.touchCircle(atPoint: t.location(in: self)) }
             }
-            
-            updateBuffer()
-            
-            for t in touches { self.touchTriangle(atPoint: t.location(in: self)) }
-        }
-        if touchedStar {
-            
-            star.removeFromParent()
-            
-            plusScore()
-            
-            for node in self.children {
-                if let name = node.name {
-                    if name == "starSpread" {
-                        if !star.intersects(node) {
-                            checkLoss()
+            if touchedSquare {
+                
+                square.removeFromParent()
+                
+                plusScore()
+               
+                if soundsOn {
+                    DispatchQueue.global().async {
+                        self.squareNoise?.currentTime = 0
+                        self.squareNoise?.play()
+                    }
+                }
+                
+                for node in self.children {
+                    if let name = node.name {
+                        if name == "squareSpread" {
+                            if !square.intersects(node) {
+                                checkLoss()
+                            }
                         }
                     }
                 }
+                
+                updateBuffer()
+                
+                for t in touches { self.touchSquare(atPoint: t.location(in: self)) }
             }
-            
-            updateBuffer()
-            
-            for t in touches { self.touchStar(atPoint: t.location(in: self)) }
+            if touchedTriangle {
+                
+                triangle.removeFromParent()
+                
+                plusScore()
+                
+                if soundsOn {
+                    
+                    DispatchQueue.global().async {
+                        self.triangleNoise?.currentTime = 0
+                        self.triangleNoise?.play()
+                    }
+                }
+                for node in self.children {
+                    if let name = node.name {
+                        if name == "triangleSpread" {
+                            if !triangle.intersects(node) {
+                                checkLoss()
+                            }
+                        }
+                    }
+                }
+                
+                updateBuffer()
+                
+                for t in touches { self.touchTriangle(atPoint: t.location(in: self)) }
+            }
+            if touchedStar {
+                
+                star.removeFromParent()
+                
+                plusScore()
+                
+                for node in self.children {
+                    if let name = node.name {
+                        if name == "starSpread" {
+                            if !star.intersects(node) {
+                                checkLoss()
+                            }
+                        }
+                    }
+                }
+                
+                updateBuffer()
+                
+                for t in touches { self.touchStar(atPoint: t.location(in: self)) }
+            }
+            if touchedBomb {
+                mainMenu()
+            }
         }
-        if touchedBomb {
-            mainMenu()
+    }
+    
+    func pauseGame() {
+        timer.invalidate()
+        gamePaused = true
+        for node in self.children {
+            if node.name?.contains("pauseButton") ?? false {
+                node.removeFromParent()
+            }
+            node.isPaused = true
         }
+        
+        spawnInfoBox(fillColor: UIColor.black, strokeColor: UIColor.white, text: "Paused", dismissText: "Resume")
+        
+    }
+    
+    func unpauseGame() {
+        let three = SKLabelNode(text: "3")
+        three.fontSize = 500
+        three.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        self.addChild(three)
+        
+        let fade = SKAction.fadeOut(withDuration: 1)
+        
+        three.run(fade) {
+            three.removeFromParent()
+            let two = SKLabelNode(text: "2")
+            two.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+            two.fontSize = 500
+            self.addChild(two)
+            two.run(fade) {
+                two.removeFromParent()
+                let one = SKLabelNode(text: "1")
+                one.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+                one.fontSize = 500
+                self.addChild(one)
+                one.run(fade) {
+                    one.removeFromParent()
+                    self.addPauseButton()
+                    self.scheduledTimerWithTimeInterval()
+                    self.gamePaused = false
+                    for node in self.children {
+                        node.isPaused = false
+                    }
+                }
+            }
+        }
+    }
+    
+    func addPauseButton() {
+        let pauseButton = SKShapeNode(rectOf: CGSize(width: 100, height: 100))
+        pauseButton.position = CGPoint(x: rightSide! - 100, y: topSide! * -1 + 50)
+        pauseButton.name = "pauseButton"
+        pauseButton.zPosition = 0
+        self.addChild(pauseButton)
+        
+        let pauseButtonLabel1 = SKShapeNode(rectOf: CGSize(width: 30, height: 80))
+        pauseButtonLabel1.position = CGPoint(x: rightSide! - 125, y: topSide! * -1 + 50)
+        pauseButtonLabel1.fillColor = UIColor.white
+        pauseButtonLabel1.name = "pauseButtonLabel"
+        pauseButtonLabel1.zPosition = 1
+        self.addChild(pauseButtonLabel1)
+        
+        let pauseButtonLabel2 = SKShapeNode(rectOf: CGSize(width: 30, height: 80))
+        pauseButtonLabel2.position = CGPoint(x: rightSide! - 75, y: topSide! * -1 + 50)
+        pauseButtonLabel2.fillColor = UIColor.white
+        pauseButtonLabel2.name = "pauseButtonLabel"
+        pauseButtonLabel2.zPosition = 1
+        self.addChild(pauseButtonLabel2)
+    }
+    
+    func spawnInfoBox(fillColor: UIColor, strokeColor: UIColor, text: String, dismissText: String) {
+        
+        let dismissBox = SKShapeNode(rectOf: CGSize(width: 300, height: 100))
+        dismissBox.position = CGPoint(x: rightSide! - 200, y: -1 * topSide! + 250)
+        dismissBox.strokeColor = UIColor.clear
+        dismissBox.name = "dismissBox"
+        dismissBox.zPosition = 2
+        addChild(dismissBox)
+        
+        let backgroundBox = SKShapeNode(rectOf: CGSize(width: Int(rightSide!) * 2 - 50, height: Int(topSide!) * 2 - 300 ))
+        backgroundBox.fillColor = fillColor
+        backgroundBox.strokeColor = strokeColor
+        backgroundBox.name = "infoBox"
+        backgroundBox.zPosition = 2
+        addChild(backgroundBox)
+        
+        let infoNode = SKLabelNode(text: text)
+        infoNode.preferredMaxLayoutWidth = rightSide! * 2 - 100
+        infoNode.fontSize = 100
+        infoNode.name = "infoLabel"
+        infoNode.zPosition = 3
+        addChild(infoNode)
+        
+        let dismissNode = SKLabelNode(text: dismissText)
+        dismissNode.position = CGPoint(x: rightSide! - 200, y: -1 * topSide! + 250)
+        dismissNode.fontSize = 50
+        dismissNode.name = "dismissLabel"
+        dismissNode.zPosition = 3
+        addChild(dismissNode)
+        
+        let homeNode = SKLabelNode(text: "Main Menu")
+        homeNode.position = CGPoint(x: rightSide! * -1 + 200, y: -1 * topSide! + 250)
+        homeNode.fontSize = 50
+        homeNode.name = "dismissHome"
+        homeNode.zPosition = 3
+        addChild(homeNode)
+        
+        let homeBox = SKShapeNode(rectOf: CGSize(width: 300, height: 100))
+        homeBox.position = CGPoint(x: -1 * rightSide! + 200, y: -1 * topSide! + 250)
+        homeBox.strokeColor = UIColor.clear
+        homeBox.name = "dismissHomeBox"
+        homeBox.zPosition = 2
+        addChild(homeBox)
+        
     }
     
     func checkLoss() {
         if soundsOn {
-            let path = Bundle.main.path(forResource: "bad.aif", ofType: nil)!
-            let url = URL(fileURLWithPath: path)
-            
-            do {
-                badNoise = try AVAudioPlayer(contentsOf: url)
-                badNoise?.volume = 0.7
-                badNoise?.play()
-            } catch {
-                print("AAAAA")
+            DispatchQueue.global().async {
+                self.badNoise?.currentTime = 0
+                self.badNoise?.play()
             }
         }
         if buffer {
@@ -879,15 +1072,11 @@ class GameScene: SKScene {
     func bufferActive() {
         buffer = true
         
-        let path = Bundle.main.path(forResource: "buffer.aif", ofType: nil)!
-        let url = URL(fileURLWithPath: path)
-        
-        do {
-            bufferNoise = try AVAudioPlayer(contentsOf: url)
-            bufferNoise?.volume = 0.7
-            bufferNoise?.play()
-        } catch {
-            print("AAAAA")
+        if soundsOn {
+            DispatchQueue.global().async {
+                self.bufferNoise?.currentTime = 0
+                self.bufferNoise?.play()
+            }
         }
         
         let flash = SKAction.colorize(with: UIColor.blue, colorBlendFactor: 1, duration: 0.05)
@@ -938,7 +1127,6 @@ class GameScene: SKScene {
         }
         let scoreLabel = SKLabelNode(text: String(score))
         scoreLabel.position = CGPoint(x: rightSide! - 50, y: topSide! - 50)
-        print(scoreLabel.position)
         scoreLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.right
         scoreLabel.fontSize = 50
         scoreLabel.name = "scoreNode"
@@ -954,6 +1142,179 @@ class GameScene: SKScene {
     
         
         
+    }
+    
+    func tutorial() {
+        removeAllChildren()
+
+        video = "Dot Catcher.mov"
+        
+        let background1 = SKSpriteNode(imageNamed: "videoBG1.png")
+        background1.xScale = 0.437 * 0.66
+        background1.yScale = 0.437 * 0.66
+        background1.position = CGPoint(x: 0, y: -10 + 100)
+        background1.name = "background"
+        background1.zPosition = -5
+        addChild(background1)
+        
+        let video1 = SKVideoNode(fileNamed: video)
+        video1.xScale = 0.5 * 0.66
+        video1.yScale = 0.5 * 0.66
+        video1.name = "video"
+        video1.position = CGPoint(x: 0, y: 100)
+        addChild(video1)
+        video1.play()
+        
+        videoTimer = Timer.scheduledTimer(timeInterval: 2.3, target: self, selector: #selector(self.playVideo), userInfo: nil, repeats: true)
+        
+        tutorialInfoBox(position: CGPoint(x: 0, y: topSide! - 100), size: CGSize(width: rightSide! * 1.8, height: 100), text: "Tap a shape to make it expand", arrowPosition: nil, arrowRotation: nil)
+        
+        tutorialInfoBox(position: CGPoint(x: 0, y: -topSide! + 275), size: CGSize(width: rightSide! * 1.8, height: 200), text: "Only tap shapes when they're within all other expanding shapes of the same type. Do not allow any shapes to make it off-screen.", arrowPosition: nil, arrowRotation: nil)
+        
+        let nextButton = SKShapeNode(rectOf: CGSize(width: 140, height: 80))
+        nextButton.name = "tutorialNext"
+        nextButton.position = CGPoint(x: 0, y: -topSide! + 100)
+        addChild(nextButton)
+        
+        let nextButtonLabel = SKLabelNode(text: "Next")
+        nextButtonLabel.position = nextButton.position
+        nextButtonLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        nextButtonLabel.fontSize = 50
+        addChild(nextButtonLabel)
+    }
+    
+    func tutorial2() {
+        video = "Dot Catcher 2.mov"
+        
+        let background1 = SKSpriteNode(imageNamed: "videoBG2.png")
+        background1.xScale = 0.437 * 0.66
+        background1.yScale = 0.437 * 0.66
+        background1.position = CGPoint(x: 0, y: -10 + 100)
+        background1.name = "background"
+        background1.zPosition = -5
+        addChild(background1)
+        
+        let video1 = SKVideoNode(fileNamed: video)
+        video1.xScale = 0.5 * 0.66
+        video1.yScale = 0.5 * 0.66
+        video1.name = "video"
+        video1.position = CGPoint(x: 0, y: 100)
+        addChild(video1)
+        video1.play()
+        
+        videoTimer = Timer.scheduledTimer(timeInterval: 2.3, target: self, selector: #selector(self.playVideo), userInfo: nil, repeats: true)
+        
+        tutorialInfoBox(position: CGPoint(x: 0, y: topSide! - 80), size: CGSize(width: rightSide! * 1.8, height: 170), text: "If you tap a shape when it is outside of other expanding shapes, you'll lose your buffer. If you do it again, you'll lose.", arrowPosition: CGPoint(x: 130, y: 180), arrowRotation: CGFloat.pi / 4)
+        
+        tutorialInfoBox(position: CGPoint(x: 0, y: -topSide! + 275), size: CGSize(width: rightSide! * 1.8, height: 200), text: "The first time, your buffer will return after you gain 25 points. Each time you lose it, it will take twice as many points to regain it.", arrowPosition: nil, arrowRotation: nil)
+        
+        let nextButton = SKShapeNode(rectOf: CGSize(width: 140, height: 80))
+        nextButton.name = "tutorialNext"
+        nextButton.position = CGPoint(x: 0, y: -topSide! + 100)
+        addChild(nextButton)
+        
+        let nextButtonLabel = SKLabelNode(text: "Next")
+        nextButtonLabel.position = nextButton.position
+        nextButtonLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        nextButtonLabel.fontSize = 50
+        addChild(nextButtonLabel)
+    }
+    
+    func tutorial3() {
+        video = "Dot Catcher 3.mov"
+        
+        let background1 = SKSpriteNode(imageNamed: "videoBG3.png")
+        background1.xScale = 0.437 * 0.66
+        background1.yScale = 0.437 * 0.66
+        background1.position = CGPoint(x: 0, y: -10 + 100)
+        background1.name = "background"
+        background1.zPosition = -5
+        addChild(background1)
+        
+        let video1 = SKVideoNode(fileNamed: video)
+        video1.xScale = 0.5 * 0.66
+        video1.yScale = 0.5 * 0.66
+        video1.name = "video"
+        video1.position = CGPoint(x: 0, y: 100)
+        addChild(video1)
+        video1.play()
+        
+        videoTimer = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(self.playVideo), userInfo: nil, repeats: true)
+        
+        tutorialInfoBox(position: CGPoint(x: 0, y: topSide! - 80), size: CGSize(width: rightSide! * 1.8, height: 170), text: "It's okay to tap shapes outside of the expanding shapes, as long as they're different shapes.", arrowPosition: CGPoint(x: 130, y: 350), arrowRotation: CGFloat.pi - CGFloat.pi / 4)
+        
+        tutorialInfoBox(position: CGPoint(x: 0, y: -topSide! + 275), size: CGSize(width: rightSide! * 1.4, height: 100), text: "You're ready to play now!", arrowPosition: nil, arrowRotation: nil)
+        
+        let nextButton = SKShapeNode(rectOf: CGSize(width: 140, height: 80))
+        nextButton.name = "tutorialNext"
+        nextButton.position = CGPoint(x: 0, y: -topSide! + 100)
+        addChild(nextButton)
+        
+        let nextButtonLabel = SKLabelNode(text: "Done")
+        nextButtonLabel.position = nextButton.position
+        nextButtonLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        nextButtonLabel.fontSize = 50
+        addChild(nextButtonLabel)
+    }
+    
+    @objc func playVideo() {
+        var stop = false
+        
+        let video1 = SKVideoNode(fileNamed: video)
+        video1.xScale = 0.5 * 0.66
+        video1.yScale = 0.5 * 0.66
+        video1.name = "video"
+        video1.position = CGPoint(x: 0, y: 100)
+        addChild(video1)
+        video1.play()
+        
+        for node in children {
+            if node.name == "video" && !stop {
+                node.removeFromParent()
+                stop = true
+            }
+        }
+    }
+    
+    func tutorialInfoBox(position: CGPoint, size: CGSize, text: String, arrowPosition: CGPoint?, arrowRotation: CGFloat?) {
+    
+        let infoBox = SKShapeNode(rectOf: size)
+        infoBox.position = position
+        infoBox.name = "infoBox"
+        addChild(infoBox)
+        
+        let infoLabel = SKLabelNode(text: text)
+        infoLabel.preferredMaxLayoutWidth = size.width - 20
+        infoLabel.fontSize = tutorialFontSize
+        infoLabel.numberOfLines = 2
+        infoLabel.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
+        infoLabel.position = position
+        infoLabel.name = "infoLabel"
+        addChild(infoLabel)
+        
+        if arrowPosition != nil {
+            let arrow = SKShapeNode()
+            let path = CGMutablePath()
+            path.move(to: CGPoint(x: -25, y: -50))
+            path.addLine(to: CGPoint(x: 25, y: -50))
+            path.addLine(to: CGPoint(x: 25, y: 0))
+            path.addLine(to: CGPoint(x: 50, y: 0))
+            path.addLine(to: CGPoint(x: 0, y: 50))
+            path.addLine(to: CGPoint(x: -50, y: 0))
+            path.addLine(to: CGPoint(x: -25, y: 0))
+            path.addLine(to: CGPoint(x: -25, y: -50))
+            arrow.zPosition = 10
+            arrow.path = path
+            
+            arrow.position = arrowPosition ?? CGPoint(x: 0, y: 0)
+            arrow.zRotation = arrowRotation ?? CGFloat(0)
+            arrow.fillColor = UIColor.white
+            
+            arrow.name = "infoArrow"
+            
+            addChild(arrow)
+        }
+    
     }
     
     override func update(_ currentTime: TimeInterval) {
