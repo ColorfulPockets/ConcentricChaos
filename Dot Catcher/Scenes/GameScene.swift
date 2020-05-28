@@ -159,7 +159,7 @@ class GameScene: SKScene {
         case 667.0:
             fallthrough
         case 736.0:
-            topConstant = 50
+            topConstant = 80
             sideConstant = 0
             tutorialFontSize = 40
         case 812.0:
