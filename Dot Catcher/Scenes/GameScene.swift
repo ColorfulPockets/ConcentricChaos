@@ -166,6 +166,22 @@ class GameScene: SKScene {
             topConstant = 220
             sideConstant = 50
             tutorialFontSize = 35
+        case 844.0:
+            topConstant = 230
+            sideConstant = 50
+            tutorialFontSize = 35
+        case 852.0:
+            topConstant = 230
+            sideConstant = 50
+            tutorialFontSize = 35
+        case 926.0:
+            topConstant = 300
+            sideConstant = 90
+            tutorialFontSize = 35
+        case 932.0:
+            topConstant = 320
+            sideConstant = 90
+            tutorialFontSize = 35
         case 896.0:
             topConstant = 300
             sideConstant = 90
